@@ -2,6 +2,7 @@ package school.hei.haapi.endpoint.rest.controller;
 
 import java.util.List;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,16 +17,32 @@ import static java.util.stream.Collectors.toUnmodifiableList;
 @RestController
 @AllArgsConstructor
 public class CourseController {
-    private final CourseService service;
+    private final CourseService courseService;
     private final CourseMapper courseMapper;
 
-    @GetMapping(value = "/courses")
-    public List<Course> getCourses(
-            @RequestParam(name = "page") PageFromOne page,
-            @RequestParam(name = "page_size") BoundedPageSize pageSize
-    ) {
-        return service.getCourses(page, pageSize).stream()
-                .map(courseMapper::toRest)
-                .collect(toUnmodifiableList());
+    @GetMapping("/courses")
+    public List<Course> getCourses(@RequestParam(value = "page", required = false) PageFromOne page,
+                                   @RequestParam(value = "page_size", required = false)
+                                   BoundedPageSize pageSize,
+                                   @RequestParam(value = "code", required = false, defaultValue = "")
+                                   String code,
+                                   @RequestParam(value = "name", required = false, defaultValue = "")
+                                   String name,
+                                   @RequestParam(value = "credits", required = false) Integer credits,
+                                   @RequestParam(value = "teacher_first_name", required = false,
+                                           defaultValue = "")
+                                   String teacherFirstName,
+                                   @RequestParam(value = "teacher_last_name", required = false,
+                                           defaultValue = "")
+                                   String teacherLastName,
+                                   @RequestParam(value = "codeOrder", required = false,
+                                           defaultValue = "ASC")
+                                   String codeOrder,
+                                   @RequestParam(value = "creditsOrder", required = false,
+                                           defaultValue = "ASC")
+                                   String creditsOrder) {
+        return courseService.findAllByCriteria(page, pageSize, code, name, credits, teacherFirstName,
+                        teacherLastName, Sort.Direction.valueOf(codeOrder), Sort.Direction.valueOf(creditsOrder))
+                .stream().map(courseMapper::toRest).collect(toUnmodifiableList());
     }
 }

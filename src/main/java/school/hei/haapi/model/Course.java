@@ -35,7 +35,7 @@ public class Course implements Serializable {
     private String name;
     private int credits;
     private int totalHours;
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "main_teacher_id")
     private User mainTeacher;
 }
